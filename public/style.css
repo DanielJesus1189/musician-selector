@@ -1,15 +1,20 @@
 /* Base styles */
 body {
-  font-family: sans-serif;
+  /* Clean modern font */
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   max-width: 800px;
   margin: auto;
   padding: 1rem;
-  background: #ffffff;
-  color: #000000;
+  /* Dark gray background and white text */
+  background: #2b2b2b;
+  color: #ffffff;
 }
 
 .counts {
   margin-top: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
 }
 
 label {
@@ -23,12 +28,30 @@ input[type="text"] {
   font-size: 1rem;
   border: 1px solid #ccc;
   border-radius: 4px;
-  background: #f9f9f9;
-  color: #000000;
+  background: #3a3a3a;
+  color: #ffffff;
 }
 
 input[type="checkbox"] {
   margin-right: 0.5rem;
+}
+
+/* Header styling */
+h1, h2 {
+  font-weight: 300;
+  color: #ffffff;
+  margin-bottom: 0.5rem;
+}
+
+/* Clean list appearance */
+ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+/* Adjust counts section spacing */
+.counts > div {
+  margin-right: 2rem;
 }
 
 /* Dark mode */
