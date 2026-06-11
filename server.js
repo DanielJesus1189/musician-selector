@@ -5,11 +5,17 @@ const path = require('path');
 const app = express();
 const sqlite3 = require('sqlite3').verbose();
 
-// File-based SQLite DB
-const db = new sqlite3.Database('./musicians.db');
+// File-based SQLite DB (or in-memory for serverless)
+const dbPath = process.env.VERCEL ? ':memory:' : path.join(__dirname, 'musicians.db');
+const db = new sqlite3.Database(dbPath);
 
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public'))); // serve index.html automatically
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Serve index.html for root and non-API routes (SPA fallback)
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 /* -------------------------------------------------
    Seed 50 musicians
