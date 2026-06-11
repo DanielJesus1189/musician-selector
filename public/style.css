@@ -1,0 +1,45 @@
+/* Base styles */
+body {
+  font-family: sans-serif;
+  max-width: 800px;
+  margin: auto;
+  padding: 1rem;
+  background: #ffffff;
+  color: #000000;
+}
+
+.counts {
+  margin-top: 1rem;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.4rem;
+}
+
+input[type="text"] {
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #f9f9f9;
+  color: #000000;
+}
+
+input[type="checkbox"] {
+  margin-right: 0.5rem;
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  body {
+    background: #121212;
+    color: #e0e0e0;
+  }
+  input[type="text"] {
+    background: #1e1e1e;
+    color: #e0e0e0;
+    border: 1px solid #444;
+  }
+}
