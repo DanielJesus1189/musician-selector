@@ -1,6 +1,7 @@
 // server.js – back‑end (Node + Express + SQLite)
 
 const express = require('express');
+const path = require('path');
 const app = express();
 const sqlite3 = require('sqlite3').verbose();
 
@@ -8,7 +9,7 @@ const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database('./musicians.db');
 
 app.use(express.json());
-app.use(express.static('public')); // serve index.html automatically
+app.use(express.static(path.join(__dirname, 'public'))); // serve index.html automatically
 
 /* -------------------------------------------------
    Seed 50 musicians
