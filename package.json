@@ -1,0 +1,15 @@
+{
+  "name": "musician-selector",
+  "version": "1.0.0",
+  "description": "Select musicians and see live aggregated counts of instruments and vocal ranges.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "sqlite3": "^5.1.6"
+  }
+}

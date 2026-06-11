@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Musician Selector</title>
+  <style>
+    body {font-family: sans-serif; max-width: 800px; margin: auto; padding: 1rem;}
+    .counts {margin-top: 1rem;}
+    label {display: block; margin-bottom: 0.4rem;}
+  </style>
+</head>
+<body>
+  <h1>Select Musicians</h1>
+  
+  <div style="margin-bottom: 1rem;">
+    <input 
+      type="text" 
+      id="searchInput" 
+      placeholder="Search musicians..."
+      style="width: 100%; padding: 0.5rem; font-size: 1rem; border: 1px solid #ccc; border-radius: 4px;"
+    />
+  </div>
+
+  <div id="list"></div>
+
+  <div class="counts">
+    <h2>Instruments</h2>
+    <ul id="instrumentCounts"></ul>
+    
+    <h2>Vocal Ranges</h2>
+    <ul id="vocalCounts"></ul>
+  </div>
+
+  <script>
+    let allMusicians = [];
+
+    // Load musicians from the API and render a checkbox for each
+    async function loadMusicians() {
+      const res = await fetch('/api/musicians');
+      allMusicians = await res.json();
+      renderMusicians(allMusicians);
+    }
+
+    // Render musicians based on filtered list
+    function renderMusicians(musicians) {
+      const container = document.getElementById('list');
+      container.innerHTML = '';
+
+      musicians.forEach(m => {
+        const label = document.createElement('label');
+
+        const cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.dataset.instrument = m.instrument || '';
+        cb.dataset.vocal = m.vocalRange;
+        cb.addEventListener('change', updateCounts);
+
+        label.appendChild(cb);
+        label.append(` ${m.name}`);
+        container.appendChild(label);
+      });
+    }
+
+    // Filter musicians by name search
+    function filterMusicians() {
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      
+      if (searchTerm === '') {
+        renderMusicians(allMusicians);
+      } else {
+        const filtered = allMusicians.filter(m => 
+          m.name.toLowerCase().includes(searchTerm)
+        );
+        renderMusicians(filtered);
+      }
+
+      updateCounts();
+    }
+
+    // Re‑calculate and display live aggregated counts
+    function updateCounts() {
+      const checked = document.querySelectorAll('#list input:checked');
+
+      const instrMap = {};
+      const vocalMap = {};
+
+      checked.forEach(cb => {
+        const instr = cb.dataset.instrument;
+        const vocal = cb.dataset.vocal;
+        // Only count non-empty instruments
+        if (instr) {
+          instrMap[instr] = (instrMap[instr] || 0) + 1;
+        }
+        vocalMap[vocal] = (vocalMap[vocal] || 0) + 1;
+      });
+
+      const instrUl = document.getElementById('instrumentCounts');
+      const vocalUl = document.getElementById('vocalCounts');
+
+      instrUl.innerHTML = Object.entries(instrMap)
+        .map(([k, v]) => `<li>${v} ${k}${v > 1 ? 's' : ''}</li>`)
+        .join('');
+
+      vocalUl.innerHTML = Object.entries(vocalMap)
+        .map(([k, v]) => `<li>${v} ${k}${v > 1 ? 's' : ''}</li>`)
+        .join('');
+    }
+
+    // Attach search listener
+    document.getElementById('searchInput').addEventListener('input', filterMusicians);
+
+    // Initialise
+    loadMusicians();
+  </script>
+</body>
+</html>
