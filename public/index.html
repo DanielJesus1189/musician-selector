@@ -30,15 +30,19 @@
 
   <script>
     let allMusicians = [];
+    // Keep track of selected musician names so selections survive filtering
+    const selectedSet = new Set();
 
     // Load musicians from the API and render a checkbox for each
     async function loadMusicians() {
       const res = await fetch('/api/musicians');
       allMusicians = await res.json();
+      // Build quick lookup map for later aggregation
+      buildMusicianMap();
       renderMusicians(allMusicians);
     }
 
-    // Render musicians based on filtered list
+    // Render musicians based on filtered list, preserving checked state
     function renderMusicians(musicians) {
       const container = document.getElementById('list');
       container.innerHTML = '';
@@ -50,12 +54,26 @@
         cb.type = 'checkbox';
         cb.dataset.instrument = m.instrument || '';
         cb.dataset.vocal = m.vocalRange;
-        cb.addEventListener('change', updateCounts);
+        // Restore previous selection if present
+        if (selectedSet.has(m.name)) {
+          cb.checked = true;
+        }
+        // Update the set whenever a checkbox changes
+        cb.addEventListener('change', () => {
+          if (cb.checked) {
+            selectedSet.add(m.name);
+          } else {
+            selectedSet.delete(m.name);
+          }
+          updateCounts();
+        });
 
         label.appendChild(cb);
         label.append(` ${m.name}`);
         container.appendChild(label);
       });
+      // After rendering, ensure counts reflect the restored selections
+      updateCounts();
     }
 
     // Filter musicians by name search
@@ -74,17 +92,25 @@
       updateCounts();
     }
 
-    // Re‑calculate and display live aggregated counts
-    function updateCounts() {
-      const checked = document.querySelectorAll('#list input:checked');
+    // Helper: map musician name to its data for quick lookup
+    const musicianByName = {};
+    // Populate the map once after loading data
+    function buildMusicianMap() {
+      allMusicians.forEach(m => {
+        musicianByName[m.name] = m;
+      });
+    }
 
+    // Re‑calculate and display live aggregated counts based on selectedSet
+    function updateCounts() {
       const instrMap = {};
       const vocalMap = {};
 
-      checked.forEach(cb => {
-        const instr = cb.dataset.instrument;
-        const vocal = cb.dataset.vocal;
-        // Only count non-empty instruments
+      selectedSet.forEach(name => {
+        const m = musicianByName[name];
+        if (!m) return;
+        const instr = m.instrument || '';
+        const vocal = m.vocalRange;
         if (instr) {
           instrMap[instr] = (instrMap[instr] || 0) + 1;
         }
